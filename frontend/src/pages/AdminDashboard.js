@@ -192,7 +192,7 @@ export default function AdminDashboard({ user, setUser }) {
                 <CardTitle>Live Bin Locations</CardTitle>
               </CardHeader>
               <CardContent>
-                <MapView bins={bins} />
+                <LeafletMap bins={bins} />
               </CardContent>
             </Card>
           </div>
