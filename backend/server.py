@@ -113,23 +113,55 @@ async def startup_db():
         doc['created_at'] = doc['created_at'].isoformat()
         await db.users.insert_one(doc)
     
-    driver_exists = await db.users.find_one({"username": "driver"})
-    if not driver_exists:
-        driver_user = User(
-            username="driver",
-            password=hash_password("driver123"),
-            role="driver",
-            name="Demo Driver"
-        )
-        doc = driver_user.model_dump()
-        doc['created_at'] = doc['created_at'].isoformat()
-        await db.users.insert_one(doc)
+    # Create multiple drivers
+    drivers_data = [
+        {"username": "driver", "password": "driver123", "name": "Demo Driver"},
+        {"username": "rajesh", "password": "rajesh123", "name": "Rajesh Kumar"},
+        {"username": "priya", "password": "priya123", "name": "Priya Sharma"},
+        {"username": "arun", "password": "arun123", "name": "Arun Patel"},
+        {"username": "lakshmi", "password": "lakshmi123", "name": "Lakshmi Iyer"},
+    ]
+    
+    for driver_data in drivers_data:
+        driver_exists = await db.users.find_one({"username": driver_data["username"]})
+        if not driver_exists:
+            driver_user = User(
+                username=driver_data["username"],
+                password=hash_password(driver_data["password"]),
+                role="driver",
+                name=driver_data["name"]
+            )
+            doc = driver_user.model_dump()
+            doc['created_at'] = doc['created_at'].isoformat()
+            await db.users.insert_one(doc)
     
     # Create demo bins if collection is empty
     bin_count = await db.bins.count_documents({})
     if bin_count == 0:
         demo_bins = [
-            BinCreate(location_name="Main Street Plaza", latitude=40.7580, longitude=-73.9855, fill_level=85, status="full"),
+            # Tamil Nadu, India bins
+            BinCreate(location_name="Marina Beach", latitude=13.0499, longitude=80.2824, fill_level=92, status="critical"),
+            BinCreate(location_name="T Nagar Bus Stand", latitude=13.0418, longitude=80.2341, fill_level=78, status="full"),
+            BinCreate(location_name="Anna Nagar Tower", latitude=13.0878, longitude=80.2088, fill_level=55, status="half-full"),
+            BinCreate(location_name="Central Railway Station", latitude=13.0827, longitude=80.2707, fill_level=88, status="full"),
+            BinCreate(location_name="Pondy Bazaar", latitude=13.0473, longitude=80.2406, fill_level=65, status="half-full"),
+            BinCreate(location_name="Valluvar Kottam", latitude=13.0477, longitude=80.2409, fill_level=25, status="empty"),
+            BinCreate(location_name="Mylapore Temple", latitude=13.0339, longitude=80.2675, fill_level=72, status="half-full"),
+            BinCreate(location_name="Adyar Depot", latitude=13.0067, longitude=80.2570, fill_level=94, status="critical"),
+            BinCreate(location_name="Guindy Park", latitude=13.0067, longitude=80.2206, fill_level=42, status="half-full"),
+            BinCreate(location_name="Porur Junction", latitude=13.0358, longitude=80.1564, fill_level=81, status="full"),
+            BinCreate(location_name="Tambaram East", latitude=12.9249, longitude=80.1000, fill_level=68, status="half-full"),
+            BinCreate(location_name="Velachery Bus Stand", latitude=12.9750, longitude=80.2167, fill_level=90, status="full"),
+            BinCreate(location_name="OMR Toll Plaza", latitude=12.8406, longitude=80.2270, fill_level=35, status="empty"),
+            BinCreate(location_name="Coimbatore RS Puram", latitude=11.0168, longitude=76.9558, fill_level=76, status="full"),
+            BinCreate(location_name="Coimbatore Gandhipuram", latitude=11.0185, longitude=76.9674, fill_level=58, status="half-full"),
+            BinCreate(location_name="Madurai Meenakshi Temple", latitude=9.9195, longitude=78.1193, fill_level=85, status="full"),
+            BinCreate(location_name="Trichy Rock Fort", latitude=10.8256, longitude=78.6867, fill_level=48, status="half-full"),
+            BinCreate(location_name="Salem Steel Plant", latitude=11.6643, longitude=78.1460, fill_level=62, status="half-full"),
+            BinCreate(location_name="Tirunelveli Town", latitude=8.7139, longitude=77.7567, fill_level=71, status="half-full"),
+            BinCreate(location_name="Vellore Fort", latitude=12.9165, longitude=79.1325, fill_level=39, status="empty"),
+            # New York bins (keeping original)
+            BinCreate(location_name="Main Street Plaza NYC", latitude=40.7580, longitude=-73.9855, fill_level=85, status="full"),
             BinCreate(location_name="Central Park South", latitude=40.7678, longitude=-73.9812, fill_level=45, status="half-full"),
             BinCreate(location_name="Times Square", latitude=40.7589, longitude=-73.9851, fill_level=95, status="critical"),
             BinCreate(location_name="Columbus Circle", latitude=40.7681, longitude=-73.9819, fill_level=30, status="empty"),
