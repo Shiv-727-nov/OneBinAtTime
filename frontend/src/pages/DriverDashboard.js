@@ -204,7 +204,7 @@ export default function DriverDashboard({ user, setUser }) {
                     <CardTitle className="text-lg">Route Map & Navigation</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <DriverMapView route={selectedRoute} bins={getRouteBins(selectedRoute)} />
+                    <LeafletDriverMap route={selectedRoute} bins={getRouteBins(selectedRoute)} />
                   </CardContent>
                 </Card>
 
