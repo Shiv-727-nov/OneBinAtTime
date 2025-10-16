@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { toast } from 'sonner';
-import MapView from '../components/MapView';
+import LeafletMap from '../components/LeafletMap';
 import BinList from '../components/BinList';
 import RouteAssignment from '../components/RouteAssignment';
 
