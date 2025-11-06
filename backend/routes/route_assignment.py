@@ -84,7 +84,7 @@ async def assign_route(route_data: RouteCreate):
             {"id": {"$in": route_data.bin_ids}},
             {"$set": {
                 "assigned_to": route_data.driver_id,
-                "assigned_route": route.route_id
+                "assigned_route": route.id
             }}
         )
         
