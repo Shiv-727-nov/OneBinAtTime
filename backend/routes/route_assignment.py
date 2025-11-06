@@ -24,7 +24,7 @@ class RouteStatusUpdate(BaseModel):
 
 class Route(BaseModel):
     model_config = ConfigDict(extra="ignore")
-    route_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))  # Changed from route_id to id
     driver_id: str
     driver_name: str
     bin_ids: List[str]
@@ -35,6 +35,7 @@ class Route(BaseModel):
     estimated_duration: int = 0  # minutes
     actual_duration: Optional[int] = None  # minutes
     assigned_by: str = "admin"  # admin or AI
+    total_distance: Optional[float] = None  # For compatibility with existing routes
 
 # Endpoints
 @router.post("/assign", status_code=status.HTTP_201_CREATED, response_model=dict)
