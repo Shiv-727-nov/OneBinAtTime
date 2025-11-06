@@ -290,12 +290,12 @@ async def complete_route(route_id: str):
 async def cancel_route(route_id: str):
     """Cancel route assignment (admin only, only if status is assigned)"""
     try:
-        route = await db.routes.find_one({"route_id": route_id})
+        route = await db.routes.find_one({"id": route_id})
         if not route:
             raise HTTPException(status_code=404, detail="Route not found")
         
-        if route['status'] != 'assigned':
-            raise HTTPException(status_code=400, detail="Can only cancel routes with 'assigned' status")
+        if route['status'] not in ['assigned', 'pending']:
+            raise HTTPException(status_code=400, detail="Can only cancel routes with 'assigned' or 'pending' status")
         
         # Update driver - set back to available
         await db.drivers.update_one(
@@ -316,7 +316,7 @@ async def cancel_route(route_id: str):
         )
         
         # Delete route
-        await db.routes.delete_one({"route_id": route_id})
+        await db.routes.delete_one({"id": route_id})
         
         return {"success": True, "data": {"route_id": route_id}, "message": "Route cancelled successfully"}
     except HTTPException:
