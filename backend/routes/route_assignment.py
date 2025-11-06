@@ -57,9 +57,10 @@ async def assign_route(route_data: RouteCreate):
         # Estimate duration (10 minutes per bin)
         estimated_duration = len(route_data.bin_ids) * 10
         
-        # Create route
+        # Create route with driver_name
         route = Route(
             **route_data.model_dump(),
+            driver_name=driver['name'],
             estimated_duration=estimated_duration
         )
         doc = route.model_dump()
