@@ -197,24 +197,24 @@ async def update_route_status(route_id: str, status_update: RouteStatusUpdate):
 async def start_route(route_id: str):
     """Mark route as started"""
     try:
-        route = await db.routes.find_one({"route_id": route_id})
+        route = await db.routes.find_one({"id": route_id})
         if not route:
             raise HTTPException(status_code=404, detail="Route not found")
         
-        if route['status'] != 'assigned':
-            raise HTTPException(status_code=400, detail="Route must be in 'assigned' status to start")
+        if route['status'] not in ['assigned', 'pending']:
+            raise HTTPException(status_code=400, detail="Route must be in 'assigned' or 'pending' status to start")
         
         started_at = datetime.now(timezone.utc)
         
         result = await db.routes.update_one(
-            {"route_id": route_id},
+            {"id": route_id},
             {"$set": {
                 "status": "in-progress",
                 "started_at": started_at.isoformat()
             }}
         )
         
-        updated_route = await db.routes.find_one({"route_id": route_id}, {"_id": 0})
+        updated_route = await db.routes.find_one({"id": route_id}, {"_id": 0})
         if isinstance(updated_route.get('started_at'), str):
             updated_route['started_at'] = datetime.fromisoformat(updated_route['started_at'])
         
