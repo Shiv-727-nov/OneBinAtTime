@@ -75,7 +75,7 @@ async def assign_route(route_data: RouteCreate):
             {"driver_id": route_data.driver_id},
             {"$set": {
                 "availability": "on-route",
-                "current_route_id": route.route_id
+                "current_route_id": route.id
             }}
         )
         
