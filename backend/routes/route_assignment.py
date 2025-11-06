@@ -26,6 +26,7 @@ class Route(BaseModel):
     model_config = ConfigDict(extra="ignore")
     route_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     driver_id: str
+    driver_name: str
     bin_ids: List[str]
     status: str = "assigned"  # assigned, in-progress, completed
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
