@@ -37,26 +37,21 @@ export default function DriverDashboard({ user, setUser }) {
 
   const fetchData = async () => {
     try {
-      // Fetch driver info from users endpoint
-      const usersRes = await axios.get(`${API}/users/drivers`);
-      const currentDriver = usersRes.data.find(d => d.id === user.id);
+      // Fetch driver info - match by name since user IDs may not match driver IDs
+      const driversRes = await axios.get(`${API}/drivers`);
+      const driverDetails = driversRes.data.data.find(d => d.name === user.name || d.email.includes(user.username));
       
-      // Fetch driver detailed info from drivers endpoint
-      let driverDetails = null;
-      try {
-        const driversRes = await axios.get(`${API}/drivers`);
-        driverDetails = driversRes.data.data.find(d => d.name === user.name);
-      } catch (err) {
-        console.log('Driver details not available');
+      if (!driverDetails) {
+        // If no driver found, user might not have driver record yet
+        toast.error('Driver profile not found. Please contact admin.');
+        setLoading(false);
+        return;
       }
       
-      setDriverInfo({
-        ...currentDriver,
-        ...driverDetails,
-      });
+      setDriverInfo(driverDetails);
       
-      // Fetch routes for this driver
-      const routesRes = await axios.get(`${API}/route-management/driver/${user.id}`);
+      // Fetch routes using the actual driver_id from drivers collection
+      const routesRes = await axios.get(`${API}/route-management/driver/${driverDetails.driver_id}`);
       const driverRoutes = routesRes.data.data || [];
       
       // Fetch bins data for all routes
