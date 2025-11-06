@@ -353,6 +353,8 @@ from routes.drivers import router as drivers_router
 from routes.route_assignment import router as routes_router
 # Import bin collection routes
 from routes.bin_collection import router as bin_collection_router
+# Import AI assignment routes
+from routes.ai_routes import router as ai_router
 
 # Include the router in the main app
 app.include_router(api_router)
@@ -365,6 +367,9 @@ app.include_router(routes_router, prefix="/api/route-management", tags=["route-m
 
 # Include bin collection routes (extends existing /api/bins)
 app.include_router(bin_collection_router, prefix="/api/bins", tags=["bin-collection"])
+
+# Include AI assignment routes
+app.include_router(ai_router, prefix="/api/ai", tags=["ai-assignment"])
 
 app.add_middleware(
     CORSMiddleware,
