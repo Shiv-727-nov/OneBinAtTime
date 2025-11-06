@@ -236,8 +236,10 @@ class AIAssignmentService:
                 'status': 'pending'
             }
             
+            # Insert and remove _id for return
             await db.assignments.insert_one(assignment)
-            assignments.append(assignment)
+            assignment_copy = {k: v for k, v in assignment.items() if k != '_id'}
+            assignments.append(assignment_copy)
             
             logger.info(f"✅ Assigned {len(bin_ids)} bins to {driver['name']} (confidence: {int(score_data['score'])}%)")
         
