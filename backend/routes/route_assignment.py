@@ -228,7 +228,7 @@ async def start_route(route_id: str):
 async def complete_route(route_id: str):
     """Mark route as completed"""
     try:
-        route = await db.routes.find_one({"route_id": route_id})
+        route = await db.routes.find_one({"id": route_id})
         if not route:
             raise HTTPException(status_code=404, detail="Route not found")
         
@@ -246,7 +246,7 @@ async def complete_route(route_id: str):
         
         # Update route
         await db.routes.update_one(
-            {"route_id": route_id},
+            {"id": route_id},
             {"$set": {
                 "status": "completed",
                 "completed_at": completed_at.isoformat(),
@@ -276,7 +276,7 @@ async def complete_route(route_id: str):
             }}
         )
         
-        updated_route = await db.routes.find_one({"route_id": route_id}, {"_id": 0})
+        updated_route = await db.routes.find_one({"id": route_id}, {"_id": 0})
         if isinstance(updated_route.get('completed_at'), str):
             updated_route['completed_at'] = datetime.fromisoformat(updated_route['completed_at'])
         
