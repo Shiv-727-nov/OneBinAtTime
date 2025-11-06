@@ -173,6 +173,39 @@ async def startup_db():
             doc = bin_obj.model_dump()
             doc['last_updated'] = doc['last_updated'].isoformat()
             await db.bins.insert_one(doc)
+    
+    # Create demo drivers if collection is empty
+    driver_count = await db.drivers.count_documents({})
+    if driver_count == 0:
+        from routes.drivers import Driver, Location
+        demo_drivers = [
+            {
+                "name": "Ravi Kumar",
+                "email": "ravi@example.com",
+                "phone": "+91-9876543210",
+                "current_location": {"lat": 13.0827, "lng": 80.2707},
+                "availability": "available"
+            },
+            {
+                "name": "Priya Sharma",
+                "email": "priya@example.com",
+                "phone": "+91-9876543211",
+                "current_location": {"lat": 13.0500, "lng": 80.2500},
+                "availability": "available"
+            },
+            {
+                "name": "Arun Singh",
+                "email": "arun@example.com",
+                "phone": "+91-9876543212",
+                "current_location": {"lat": 13.1000, "lng": 80.3000},
+                "availability": "off-duty"
+            }
+        ]
+        for driver_data in demo_drivers:
+            driver_obj = Driver(**driver_data)
+            doc = driver_obj.model_dump()
+            doc['created_at'] = doc['created_at'].isoformat()
+            await db.drivers.insert_one(doc)
 
 # Auth endpoints
 @api_router.post("/auth/login", response_model=UserResponse)
