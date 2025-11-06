@@ -222,7 +222,7 @@ export default function DriverDashboard({ user, setUser }) {
               <CardContent>
                 <RouteDisplay 
                   routes={routes} 
-                  driverId={user.id} 
+                  driverId={driverInfo?.driver_id || user.id} 
                   onRouteUpdate={fetchData}
                 />
               </CardContent>
