@@ -349,12 +349,17 @@ async def get_drivers():
 
 # Import driver routes
 from routes.drivers import router as drivers_router
+# Import route assignment routes
+from routes.route_assignment import router as routes_router
 
 # Include the router in the main app
 app.include_router(api_router)
 
 # Include driver management routes
 app.include_router(drivers_router, prefix="/api/drivers", tags=["drivers"])
+
+# Include route assignment routes
+app.include_router(routes_router, prefix="/api/routes", tags=["routes"])
 
 app.add_middleware(
     CORSMiddleware,
