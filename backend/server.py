@@ -358,8 +358,8 @@ app.include_router(api_router)
 # Include driver management routes
 app.include_router(drivers_router, prefix="/api/drivers", tags=["drivers"])
 
-# Include route assignment routes
-app.include_router(routes_router, prefix="/api/routes", tags=["routes"])
+# Include route assignment routes (using different prefix to avoid conflict with existing /api/routes)
+app.include_router(routes_router, prefix="/api/route-management", tags=["route-management"])
 
 app.add_middleware(
     CORSMiddleware,
