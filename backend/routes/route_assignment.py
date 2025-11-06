@@ -173,19 +173,19 @@ async def get_driver_routes(driver_id: str):
 async def update_route_status(route_id: str, status_update: RouteStatusUpdate):
     """Update route status"""
     try:
-        valid_statuses = ["assigned", "in-progress", "completed"]
+        valid_statuses = ["assigned", "in-progress", "completed", "pending"]  # Added pending for compatibility
         if status_update.status not in valid_statuses:
             raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {', '.join(valid_statuses)}")
         
         result = await db.routes.update_one(
-            {"route_id": route_id},
+            {"id": route_id},
             {"$set": {"status": status_update.status}}
         )
         
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Route not found")
         
-        updated_route = await db.routes.find_one({"route_id": route_id}, {"_id": 0})
+        updated_route = await db.routes.find_one({"id": route_id}, {"_id": 0})
         
         return {"success": True, "data": updated_route, "message": "Route status updated successfully"}
     except HTTPException:
