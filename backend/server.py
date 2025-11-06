@@ -314,8 +314,14 @@ async def get_drivers():
     drivers = await db.users.find({"role": "driver"}, {"_id": 0}).to_list(1000)
     return [UserResponse(id=d['id'], username=d['username'], role=d['role'], name=d['name']) for d in drivers]
 
+# Import driver routes
+from routes.drivers import router as drivers_router
+
 # Include the router in the main app
 app.include_router(api_router)
+
+# Include driver management routes
+app.include_router(drivers_router, prefix="/api/drivers", tags=["drivers"])
 
 app.add_middleware(
     CORSMiddleware,
