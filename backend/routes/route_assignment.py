@@ -123,7 +123,7 @@ async def get_routes(status_filter: Optional[str] = None, driver_id: Optional[st
 async def get_route(route_id: str):
     """Retrieve single route with full details"""
     try:
-        route = await db.routes.find_one({"route_id": route_id}, {"_id": 0})
+        route = await db.routes.find_one({"id": route_id}, {"_id": 0})
         if not route:
             raise HTTPException(status_code=404, detail="Route not found")
         
