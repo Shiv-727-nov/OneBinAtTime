@@ -355,6 +355,8 @@ from routes.route_assignment import router as routes_router
 from routes.bin_collection import router as bin_collection_router
 # Import AI assignment routes
 from routes.ai_routes import router as ai_router
+# Import chatbot routes
+from routes.chatbot_routes import router as chatbot_router
 
 # Include the router in the main app
 app.include_router(api_router)
@@ -370,6 +372,9 @@ app.include_router(bin_collection_router, prefix="/api/bins", tags=["bin-collect
 
 # Include AI assignment routes
 app.include_router(ai_router, prefix="/api/ai", tags=["ai-assignment"])
+
+# Include chatbot routes
+app.include_router(chatbot_router, prefix="/api/chatbot", tags=["chatbot"])
 
 app.add_middleware(
     CORSMiddleware,
