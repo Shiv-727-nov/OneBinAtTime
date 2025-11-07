@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { toast } from 'sonner';
 import RouteDisplay from '../components/RouteDisplay';
 import DriverRouteMap from '../components/DriverRouteMap';
+import Chatbot from '../components/Chatbot';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
