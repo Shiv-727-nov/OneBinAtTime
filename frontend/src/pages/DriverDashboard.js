@@ -19,6 +19,7 @@ export default function DriverDashboard({ user, setUser }) {
   const [loading, setLoading] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(true);
+  const [chatbotOpen, setChatbotOpen] = useState(false);
 
   useEffect(() => {
     fetchData();
