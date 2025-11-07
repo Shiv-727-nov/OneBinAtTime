@@ -216,6 +216,14 @@ export default function AdminDashboard({ user, setUser }) {
           <RouteAssignment bins={bins} drivers={drivers} routes={routes} fetchData={fetchData} />
         )}
       </main>
+
+      {/* Chatbot */}
+      <Chatbot 
+        userRole="admin" 
+        userName={user.name}
+        isOpen={chatbotOpen}
+        onClose={() => setChatbotOpen(false)}
+      />
     </div>
   );
 }
