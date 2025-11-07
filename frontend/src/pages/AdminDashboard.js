@@ -19,6 +19,7 @@ export default function AdminDashboard({ user, setUser }) {
   const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [chatbotOpen, setChatbotOpen] = useState(false);
 
   useEffect(() => {
     fetchData();
