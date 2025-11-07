@@ -270,6 +270,14 @@ export default function DriverDashboard({ user, setUser }) {
           </div>
         </div>
       </div>
+
+      {/* Chatbot */}
+      <Chatbot 
+        userRole="driver" 
+        userName={user.name}
+        isOpen={chatbotOpen}
+        onClose={() => setChatbotOpen(false)}
+      />
     </div>
   );
 }
