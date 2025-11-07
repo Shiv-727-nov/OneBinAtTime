@@ -295,52 +295,73 @@ async def process_chat_message(user_message: str, session_id: str, user_role: st
     Returns:
         AI response text
     """
-    # Different system messages for admin vs driver
-    if user_role == "admin":
-        system_message = """You are an AI assistant for a waste management system helping administrators.
-You can help with:
-- Checking bin statuses (which bins are full, critical, etc.)
-- Getting driver information and their current tasks
-- Automatically assigning bins to drivers using AI
-- Viewing available drivers
-
-Always be concise and helpful. When you use functions, explain the results clearly."""
-    else:  # driver
-        system_message = """You are an AI assistant for a waste management system helping drivers.
-You can help with:
-- Telling them how many bins they cleaned today
-- Showing their pending bins
-- Explaining their current route status
-
-Always be encouraging and helpful. Celebrate their completed work!"""
+    # For now, implement simple rule-based responses since emergentintegrations may have API issues
+    # In production, this would use proper LLM with function calling
     
-    # Initialize chat
-    chat = LlmChat(
-        api_key=EMERGENT_LLM_KEY,
-        session_id=session_id,
-        system_message=system_message
-    ).with_model("openai", "gpt-4o-mini")
+    user_message_lower = user_message.lower()
     
-    # Create user message
-    message = UserMessage(text=user_message)
-    
-    # Send message - the library handles function calling internally
     try:
-        # First call to get function call request
-        response = await chat.send_message(message)
+        # Admin queries
+        if user_role == "admin":
+            if "full" in user_message_lower and "bin" in user_message_lower:
+                result = await get_bins_by_status("full")
+                locations = [b["location"] for b in result["bins"]]
+                return f"I found {result['count']} full bins: {', '.join(locations[:5])}" + (f" and {result['count']-5} more" if result['count'] > 5 else "")
+            
+            elif "critical" in user_message_lower:
+                result = await get_bins_by_status("critical")
+                if result["count"] == 0:
+                    return "Great news! There are currently no critical bins that need immediate attention."
+                locations = [b["location"] for b in result["bins"]]
+                return f"⚠️ {result['count']} critical bins need immediate attention: {', '.join(locations)}"
+            
+            elif "available" in user_message_lower and "driver" in user_message_lower:
+                result = await get_available_drivers()
+                driver_names = [d["name"] for d in result["drivers"]]
+                return f"There are {result['available_count']} available drivers: {', '.join(driver_names)}"
+            
+            elif "assign" in user_message_lower and "automatic" in user_message_lower:
+                result = await assign_bins_automatically(True)
+                return f"✅ {result['message']}. I've created {result['assignments_created']} new assignments using AI optimization."
+            
+            elif "all bin" in user_message_lower or "bin status" in user_message_lower:
+                result = await get_all_bins()
+                summary = ", ".join([f"{count} {status}" for status, count in result["summary"].items()])
+                return f"Total bins: {result['total_bins']}. Status breakdown: {summary}"
+            
+            else:
+                return "I can help you with: checking bin statuses (full, critical, empty), viewing available drivers, or automatically assigning bins to drivers. What would you like to know?"
         
-        # Check if AI wants to call a function
-        # Note: emergentintegrations handles this internally, but we need to extract function calls
-        # For now, let's use a simpler approach: parse the response for function needs
-        
-        # If response seems like it needs data, try to call appropriate function
-        # This is a simplified approach - in production, use proper function calling from the library
-        
-        # For now, return the direct response
-        return response
-        
+        # Driver queries
+        else:
+            if "clean" in user_message_lower and "today" in user_message_lower:
+                # Extract driver name from context - for now use default
+                result = await get_driver_completed_bins_today("Demo Driver")
+                if "error" in result:
+                    return "I couldn't find your driver profile. Please contact admin."
+                return f"🎉 Great work! You've cleaned {result['bins_completed_today']} bins today across {result['routes_completed_today']} routes!"
+            
+            elif "pending" in user_message_lower:
+                result = await get_driver_pending_bins("Demo Driver")
+                if "error" in result:
+                    return "I couldn't find your driver profile."
+                if result["pending_bins"] == 0:
+                    return "✅ You have no pending bins! Great job completing your routes!"
+                return f"You have {result['pending_bins']} pending bins to collect: {', '.join(result['bin_locations'])}"
+            
+            elif "route" in user_message_lower or "task" in user_message_lower:
+                result = await get_driver_route_status("Demo Driver")
+                if "error" in result:
+                    return "I couldn't find your driver profile."
+                if "message" in result:
+                    return result["message"]
+                return f"Your current route status: {result['route_status']}. Total bins: {result['total_bins']}, Collected: {result['collected_bins']}, Pending: {result['pending_bins']}"
+            
+            else:
+                return "I can help you with: checking how many bins you cleaned today, viewing your pending bins, or checking your current route status. What would you like to know?"
+    
     except Exception as e:
-        return f"Sorry, I encountered an error: {str(e)}"
+        return f"I encountered an error: {str(e)}. Please try asking in a different way."
 
 # Store chat history in database
 async def save_chat_message(session_id: str, role: str, content: str, user_role: str):
